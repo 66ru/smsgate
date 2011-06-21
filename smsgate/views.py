@@ -28,7 +28,8 @@ def send(request):
             return response_json({'status': 0, 'id': item.id})
         else:
             return response_json({'status': 2, 'message': 'form is invalid', 'form_errors': form.errors})
-    return response_json({})
+    else:
+        return HttpResponse(status=405) # method not allowed
 
 def status(request, item_id):
     try:

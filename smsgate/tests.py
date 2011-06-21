@@ -57,6 +57,11 @@ class SendTestCase(unittest.TestCase):
         self.assertEqual(resp['status'], 2)
         self.assertTrue('message' in resp['form_errors'])
 
+    def test_invalid_method(self):
+        # GET is not allowed
+        resp = client.get('/sms/send/')
+        self.assertEqual(resp.status_code, 405)
+
 
 class StatusTestCase(unittest.TestCase):
     def setUp(self):
