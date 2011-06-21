@@ -14,14 +14,13 @@ def send(request):
 
         if form.is_valid():
             message = form.cleaned_data['message']
-            partner_id = form.cleaned_data['partner_id']
 
             try:
-                partner = Partner.objects.get(pk=partner_id)
+                partner = Partner.objects.get(pk=form.cleaned_data['partner_id'])
             except Partner.DoesNotExist:
                 return response_json({'status': 1, 'message': 'no partner with specified id'})
 
-            item = QueueItem(message=message, partner_id=partner_id)
+            item = QueueItem(message=message, partner=partner)
             item.save()
 
             return response_json({'status': 0, 'id': item.id})
