@@ -26,7 +26,12 @@ class SendTestCase(unittest.TestCase):
         """
         message = 'Some message for you man'
 
-        resp = self.get_json('/sms/send/', {'partner_id': self.partner_id, 'message': message})
+        resp = self.get_json('/sms/send/', {
+            'partner_id': self.partner_id,
+            'message': message,
+            'phone_n': '79001234567',
+        })
+
         # проверяем статус...
         self.assertEqual(resp['status'], 0)
         queue_id = resp['id']
@@ -40,7 +45,11 @@ class SendTestCase(unittest.TestCase):
         """
         Невалидный ид партнера должен вызывать статус 1.
         """
-        resp = self.get_json('/sms/send/', {'partner_id': 9000, 'message': 'msg'})
+        resp = self.get_json('/sms/send/', {
+            'partner_id': 9000,
+            'message': 'msg',
+            'phone_n': '79001234567',
+        })
         self.assertEqual(resp['status'], 1)
 
 
@@ -48,3 +57,4 @@ class SendTestCase(unittest.TestCase):
         resp = self.get_json('/sms/send/', {})
         self.assertEqual(resp['status'], 2)
         self.assertTrue('message' in resp['form_errors'])
+        
