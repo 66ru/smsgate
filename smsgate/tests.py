@@ -79,4 +79,4 @@ class StatusTestCase(unittest.TestCase):
         должен вернуться код 404.
         """
         resp = client.get('/sms/status/%s/' % 9000)
-        self.assertEqual(resp.status_code, 404).
+        self.assertEqual(resp.status_code, 404)
