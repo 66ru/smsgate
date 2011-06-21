@@ -20,5 +20,5 @@ class QueueItem(models.Model):
         ('1', 'OK'),
         ('2', 'FAILED'),
     )
-    status = models.CharField(max_length=1)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='0')
     status_message = models.TextField(blank=True)
