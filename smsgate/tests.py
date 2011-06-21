@@ -7,10 +7,10 @@ from smsgate.models import Partner, QueueItem
 
 client = Client()
 
+
 def get_json(to, args_dict={}):
     str_response = client.post(to, args_dict)
     return json.loads(str_response.content)
-
 
 
 class SendTestCase(unittest.TestCase):
@@ -19,7 +19,6 @@ class SendTestCase(unittest.TestCase):
         p.save()
 
         self.partner_id = p.id
-
 
     def test_ok(self):
         """
@@ -41,10 +40,10 @@ class SendTestCase(unittest.TestCase):
         self.assertEqual(self.partner_id, qi.partner_id)
         self.assertEqual(message, qi.message)
 
-
     def test_bad_partner(self):
         """
-        Невалидный ид партнера должен вызывать статус 1.
+        Невалидный ид партнера должен
+        вызывать статус 1.
         """
         resp = get_json('/sms/send/', {
             'partner_id': 9000,
@@ -52,7 +51,6 @@ class SendTestCase(unittest.TestCase):
             'phone_n': '79001234567',
         })
         self.assertEqual(resp['status'], 1)
-
 
     def test_invalid_form(self):
         resp = get_json('/sms/send/', {})
@@ -70,7 +68,6 @@ class StatusTestCase(unittest.TestCase):
 
         self.qi = qi
 
-
     def test_ok_id(self):
         resp = get_json('/sms/status/%s/' % self.qi.id)
         self.assertEquals(resp['status'], '0')
@@ -78,9 +75,8 @@ class StatusTestCase(unittest.TestCase):
 
     def test_bad_id(self):
         """
-        Если указан неподходящий id, то должен вернуться код 404.
+        Если указан неподходящий id, то
+        должен вернуться код 404.
         """
         resp = client.get('/sms/status/%s/' % 9000)
-        self.assertEqual(resp.status_code, 404)
-
-        
+        self.assertEqual(resp.status_code, 404).
