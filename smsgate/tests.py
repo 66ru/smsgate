@@ -40,3 +40,9 @@ class SendTestCase(unittest.TestCase):
         """
         resp = self.get_json('/sms/send/', {'partner_id': 9000, 'message': 'msg'})
         self.assertEqual(resp['status'], 1)
+
+
+    def test_invalid_form(self):
+        resp = self.get_json('/sms/send/', {})
+        self.assertEqual(resp['status'], 2)
+        self.assertTrue('message' in resp['form_errors'])

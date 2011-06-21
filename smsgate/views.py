@@ -1,6 +1,6 @@
 import json
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 
 from models import Partner, QueueItem
 from forms import  SendForm
@@ -25,5 +25,10 @@ def send(request):
 
             return response_json({'status': 0, 'id': item.id})
         else:
-            pass
+            return response_json({'status': 2, 'message': 'form is invalid', 'form_errors': form.errors})
     return response_json({})
+
+# TODO: Auth*
+def status(request, item_id):
+    qi = get_object_or_404(QueueItem, pk=item_id)
+    return response_json({'status': qi.status, 'status_message': qi.status_message})
