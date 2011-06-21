@@ -1,3 +1,4 @@
+#-*- coding: UTF-8 -*-
 import json
 
 from django.utils import unittest
@@ -21,11 +22,12 @@ class SendTestCase(unittest.TestCase):
 
     def test_ok(self):
         """
-        Valid partner - valid status.
+        Полностью валидный вариант.
         """
         message = 'Some message for you man'
 
         resp = self.get_json('/sms/send/', {'partner_id': self.partner_id, 'message': message})
+        # проверяем статус...
         self.assertEqual(resp['status'], 0)
         queue_id = resp['id']
         qi = QueueItem.objects.get(pk=queue_id)
@@ -36,7 +38,7 @@ class SendTestCase(unittest.TestCase):
 
     def test_bad_partner(self):
         """
-        Invalid partner id should cause status 1.
+        Невалидный ид партнера должен вызывать статус 1.
         """
         resp = self.get_json('/sms/send/', {'partner_id': 9000, 'message': 'msg'})
         self.assertEqual(resp['status'], 1)
