@@ -8,7 +8,7 @@ from smsgate.models import Partner, QueueItem
 client = Client()
 
 
-def get_json(to, args_dict={}):
+def post_and_get_json(to, args_dict):
     str_response = client.post(to, args_dict)
     return json.loads(str_response.content)
 
@@ -26,7 +26,7 @@ class SendTestCase(unittest.TestCase):
         """
         message = 'Some message for you man'
 
-        resp = get_json('/sms/send/', {
+        resp = post_and_get_json('/sms/send/', {
             'partner_id': self.partner_id,
             'message': message,
             'phone_n': '79001234567',
@@ -45,7 +45,7 @@ class SendTestCase(unittest.TestCase):
         Невалидный ид партнера должен
         вызывать статус 1.
         """
-        resp = get_json('/sms/send/', {
+        resp = post_and_get_json('/sms/send/', {
             'partner_id': 9000,
             'message': 'msg',
             'phone_n': '79001234567',
@@ -53,7 +53,7 @@ class SendTestCase(unittest.TestCase):
         self.assertEqual(resp['status'], 1)
 
     def test_invalid_form(self):
-        resp = get_json('/sms/send/', {})
+        resp = post_and_get_json('/sms/send/', {})
         self.assertEqual(resp['status'], 2)
         self.assertTrue('message' in resp['form_errors'])
 
@@ -74,7 +74,7 @@ class StatusTestCase(unittest.TestCase):
         self.qi = qi
 
     def test_ok_id(self):
-        resp = get_json('/sms/status/%s/' % self.qi.id)
+        resp = post_and_get_json('/sms/status/%s/' % self.qi.id, {})
         self.assertEquals(resp['status'], '0')
         self.assertEquals(self.qi.status, '0')
 
