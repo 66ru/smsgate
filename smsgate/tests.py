@@ -76,4 +76,11 @@ class StatusTestCase(unittest.TestCase):
         self.assertEquals(resp['status'], '0')
         self.assertEquals(self.qi.status, '0')
 
+    def test_bad_id(self):
+        """
+        Если указан неподходящий id, то должен вернуться код 404.
+        """
+        resp = client.get('/sms/status/%s/' % 9000)
+        self.assertEqual(resp.status_code, 404)
+
         

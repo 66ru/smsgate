@@ -8,6 +8,8 @@ from forms import  SendForm
 def response_json(response_dict):
     return HttpResponse(json.dumps(response_dict), mimetype='application/javascript')
 
+# TODO: Auth*
+
 def send(request):
     if request.method == 'POST':
         form = SendForm(request.POST)
@@ -28,7 +30,9 @@ def send(request):
             return response_json({'status': 2, 'message': 'form is invalid', 'form_errors': form.errors})
     return response_json({})
 
-# TODO: Auth*
 def status(request, item_id):
-    qi = get_object_or_404(QueueItem, pk=item_id)
-    return response_json({'status': qi.status, 'status_message': qi.status_message})
+    try:
+        qi = QueueItem.objects.get(pk=item_id)
+        return response_json({'status': qi.status, 'status_message': qi.status_message})
+    except QueueItem.DoesNotExist:
+        return HttpResponse(status=404)
