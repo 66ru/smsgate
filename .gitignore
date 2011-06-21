@@ -5,3 +5,4 @@ settings_local.py
 *.py[oc]
 .project
 .pydevproject
+*.db
