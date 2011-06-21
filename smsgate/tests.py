@@ -20,6 +20,9 @@ class SendTestCase(unittest.TestCase):
 
 
     def test_ok(self):
+        """
+        Valid partner - valid status.
+        """
         message = 'Some message for you man'
 
         resp = self.get_json('/sms/send/', {'partner_id': self.partner_id, 'message': message})
@@ -32,5 +35,8 @@ class SendTestCase(unittest.TestCase):
 
 
     def test_bad_partner(self):
+        """
+        Invalid partner id should cause status 1.
+        """
         resp = self.get_json('/sms/send/', {'partner_id': 9000, 'message': 'msg'})
         self.assertEqual(resp['status'], 1)
