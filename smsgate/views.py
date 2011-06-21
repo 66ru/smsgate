@@ -15,14 +15,15 @@ def send(request):
         form = SendForm(request.POST)
 
         if form.is_valid():
-            message = form.cleaned_data['message']
-
             try:
                 partner = Partner.objects.get(pk=form.cleaned_data['partner_id'])
             except Partner.DoesNotExist:
                 return response_json({'status': 1, 'message': 'no partner with specified id'})
 
-            item = QueueItem(message=message, partner=partner)
+            message = form.cleaned_data['message']
+            comment = form.cleaned_data['comment']
+
+            item = QueueItem(message=message, partner=partner, comment=comment)
             item.save()
 
             return response_json({'status': 0, 'id': item.id})

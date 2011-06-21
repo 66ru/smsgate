@@ -40,6 +40,23 @@ class SendTestCase(unittest.TestCase):
         self.assertEqual(self.partner_id, qi.partner_id)
         self.assertEqual(message, qi.message)
 
+    def test_comment(self):
+        """
+        Комментарий не обязателен,
+        но по желанию должен вставляться.
+        """
+        comment = 'A few words...'
+        resp = post_and_get_json('/sms/send/', {
+            'partner_id': self.partner_id,
+            'message': 'msg',
+            'phone_n': '79001234567',
+            'comment': comment
+        })
+
+        queue_id = resp['id']
+        qi = QueueItem.objects.get(pk=queue_id)
+        self.assertEqual(qi.comment, comment)
+
     def test_bad_partner(self):
         """
         Невалидный ид партнера должен
