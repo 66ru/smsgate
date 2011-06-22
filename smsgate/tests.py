@@ -3,8 +3,9 @@ import json
 
 from django.utils import unittest
 from django.test.client import Client
+from smsgate.auth.backends import PartnerTokenBackend
 from smsgate.models import QueueItem
-from models import User
+from models import User, Partner
 
 def post_and_get_json(to, args_dict, client=Client()):
     str_response = client.post(to, args_dict)
@@ -95,3 +96,31 @@ class StatusTestCase(unittest.TestCase):
         """
         resp = self.client.get('/sms/status/%s/' % 9000)
         self.assertEqual(resp.status_code, 404)
+
+
+class TokenAuthTestCase(unittest.TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('test', 'test', password='test')
+
+        self.token = 'test'
+        self.partner = Partner(user=self.user, token=self.token)
+        self.partner.save()
+
+    def tearDown(self):
+        self.user.delete()
+        self.partner.delete()
+
+    def test_backend_authenticate(self):
+        backend = PartnerTokenBackend()
+        u = backend.authenticate(id=self.user.id, token=self.token)
+        self.assertEqual(u, self.user)
+
+    def test_auth(self):
+        client = Client()
+        resp = post_and_get_json('/sms/send/', {
+            'token': self.token,
+            'id': self.user.id,
+            'message': 'msg',
+            'phone_n': '79001234567',
+        }, client=client)
+        self.assertEqual(resp['status'], 0)
