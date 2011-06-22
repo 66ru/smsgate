@@ -13,8 +13,8 @@ def randstring_creator(count):
 
 class Partner(models.Model):
     user = models.ForeignKey(User, unique=True, related_name='partner')
-    secret = models.CharField(max_length=20, unique=True,
-                              default=randstring_creator(20))
+    token = models.CharField(max_length=20, unique=True,
+                             default=randstring_creator(20))
     def __unicode__(self):
         return '%s (partner)' % self.user.username
 
