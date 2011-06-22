@@ -1,14 +1,10 @@
 from django.db import models
-
-
-class Partner(models.Model):
-    name = models.CharField(max_length=20)
-
+from django.contrib.auth.models import User
 
 class QueueItem(models.Model):
     phone_n = models.CharField(max_length=15)
     message = models.CharField(max_length=140)
-    partner = models.ForeignKey(Partner)
+    user = models.ForeignKey(User)
     comment = models.TextField(blank=True)
     
     created = models.DateTimeField(auto_now_add=True)

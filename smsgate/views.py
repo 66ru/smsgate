@@ -1,29 +1,21 @@
 import json
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 
-from models import Partner, QueueItem
+from models import QueueItem
 from forms import  SendForm
 
 def response_json(response_dict):
     return HttpResponse(json.dumps(response_dict), mimetype='application/javascript')
-
-# TODO: Auth*
 
 def send(request):
     if request.method == 'POST':
         form = SendForm(request.POST)
 
         if form.is_valid():
-            try:
-                partner = Partner.objects.get(pk=form.cleaned_data['partner_id'])
-            except Partner.DoesNotExist:
-                return response_json({'status': 1, 'message': 'no partner with specified id'})
-
             message = form.cleaned_data['message']
             comment = form.cleaned_data['comment']
 
-            item = QueueItem(message=message, partner=partner, comment=comment)
+            item = QueueItem(message=message, user=request.user, comment=comment)
             item.save()
 
             return response_json({'status': 0, 'id': item.id})
