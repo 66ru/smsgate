@@ -1,4 +1,5 @@
 import json
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
 from models import QueueItem
@@ -7,6 +8,7 @@ from forms import  SendForm
 def response_json(response_dict):
     return HttpResponse(json.dumps(response_dict), mimetype='application/javascript')
 
+@login_required
 def send(request):
     if request.method == 'POST':
         form = SendForm(request.POST)
@@ -24,6 +26,7 @@ def send(request):
     else:
         return HttpResponse(status=405) # method not allowed
 
+@login_required
 def status(request, item_id):
     try:
         qi = QueueItem.objects.get(pk=item_id)

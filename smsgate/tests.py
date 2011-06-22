@@ -76,13 +76,15 @@ class StatusTestCase(unittest.TestCase):
         self.qi = qi
 
         self.client = Client()
+        self.client.login(username='test', password='test')
 
     def tearDown(self):
         self.user.delete()
         self.qi.delete()
+        self.client.logout()
 
     def test_ok_id(self):
-        resp = post_and_get_json('/sms/status/%s/' % self.qi.id, {})
+        resp = post_and_get_json('/sms/status/%s/' % self.qi.id, {}, client=self.client)
         self.assertEquals(resp['status'], '0')
         self.assertEquals(self.qi.status, '0')
 
