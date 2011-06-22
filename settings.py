@@ -93,3 +93,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'sms.smsgate',
 )
+
+#
+
+AUTH_PROFILE_MODULE = 'smsgate.Partner'
