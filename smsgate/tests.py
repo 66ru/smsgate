@@ -76,6 +76,11 @@ class SendTestCase(_RestTC):
         other_resp = self.other_client.post(addr, params)
         self.assertEquals(other_resp.status_code, 403)
 
+        # пытаемся отправить от анонимуса
+        annon_client = Client()
+        annon_resp = annon_client.post(addr, params)
+        self.assertEqual(annon_resp.status_code, 403)
+
     def test_comment(self):
         """
         Комментарий не обязателен,
