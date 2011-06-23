@@ -2,6 +2,7 @@ import string
 import random
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.fields import IPAddressField
 
 
 def randstring_creator(count):
@@ -17,6 +18,12 @@ class Partner(models.Model):
                              default=randstring_creator(20))
     def __unicode__(self):
         return '%s (partner)' % self.user.username
+
+
+class IPRange(models.Model):
+    ip_from = IPAddressField()
+    ip_to = IPAddressField(blank=True)
+    partner = models.ForeignKey(Partner)
 
 
 class QueueItem(models.Model):
