@@ -12,7 +12,6 @@ def user_passes_test_or_403(test_func):
             if test_func(request.user):
                 return view_func(request, *args, **kwargs)
             else:
-                #resp = render_to_response('403.html', context_instance=RequestContext(request))
                 resp = HttpResponse()
                 resp.status_code = 403
                 return resp
@@ -41,7 +40,7 @@ def _ipv4_to_int(ip):
     return long(hexn, 16)
 
 
-def ip_in_range(input_ip, ip_range_from, ip_range_to='255.255.255.255'):
+def ip_in_range(input_ip, ip_range_from, ip_range_to=None):
     """
     >>> f = ip_in_range
     >>> f('127.0.0.1', '0.0.0.0', '255.255.255.255')
@@ -55,4 +54,5 @@ def ip_in_range(input_ip, ip_range_from, ip_range_to='255.255.255.255'):
     >>> f('127.0.0.1', '127.0.0.0')
     True
     """
+    ip_range_to = ip_range_to or '255.255.255.255'
     return _ipv4_to_int(ip_range_from) <= _ipv4_to_int(input_ip) <= _ipv4_to_int(ip_range_to)
