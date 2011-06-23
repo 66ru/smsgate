@@ -99,7 +99,7 @@ class SendTestCase(_RestTC):
 
     def test_invalid_form(self):
         resp = post_and_get_json('/sms/send/', {}, client=self.partner_client)
-        self.assertEqual(resp['status'], 2)
+        self.assertEqual(resp['status'], 1)
         self.assertTrue('message' in resp['form_errors'])
 
     def test_invalid_method(self):

@@ -22,7 +22,7 @@ def send(request):
 
             return response_json({'status': 0, 'id': item.id})
         else:
-            return response_json({'status': 2, 'message': 'form is invalid', 'form_errors': form.errors})
+            return response_json({'status': 1, 'message': 'form is invalid', 'form_errors': form.errors})
     else:
         return HttpResponse(status=405) # method not allowed
 
