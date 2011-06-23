@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from smsgate.auth import ip_in_range
 
 
 class PartnerPostTokenMiddleware(object):
@@ -25,8 +24,6 @@ class PartnerPostTokenMiddleware(object):
                 return
 
             for ipr in ip_ranges:
-                if ip_in_range(request.META['REMOTE_ADDR'],
-                               ipr.ip_from,
-                               ipr.ip_to):
+                if ipr.in_range(request.META['REMOTE_ADDR']):
                     request.user = user
                     return

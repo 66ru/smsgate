@@ -25,6 +25,24 @@ class IPRange(models.Model):
     ip_to = IPAddressField(blank=True)
     partner = models.ForeignKey(Partner, related_name='ips_allowed')
 
+    @staticmethod
+    def _ipv4_to_int(ip):
+        """
+        >>> f = IPRange._ipv4_to_int
+        >>> f('0.0.0.0')
+        0L
+        >>> f('255.255.255.255')
+        4294967295L
+        """
+        hexn = ''.join(["%02X" % long(i) for i in ip.split('.')])
+        return long(hexn, 16)
+
+    def in_range(self, ip_str):
+        if self.ip_to:
+            return IPRange._ipv4_to_int(self.ip_from) <= IPRange._ipv4_to_int(ip_str) <= IPRange._ipv4_to_int(self.ip_to)
+        else:
+            return ip_str == self.ip_from
+
 
 class QueueItem(models.Model):
     phone_n = models.CharField(max_length=15)

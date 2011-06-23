@@ -6,8 +6,30 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import unittest
 from django.test.client import Client
 from smsgate.auth.backends import PartnerTokenBackend
-from smsgate.models import QueueItem
+from smsgate.models import QueueItem, IPRange
 from models import User, Partner
+
+
+class IPRangesTest(unittest.TestCase):
+    def test_all_the_range(self):
+        ipr1 = IPRange(ip_from='0.0.0.0', ip_to='255.255.255.255')
+        self.assertTrue(ipr1.in_range('127.0.0.1'))
+
+    def test_127_to_end(self):
+        ipr1 = IPRange(ip_from='127.0.0.0', ip_to='255.255.255.255')
+        self.assertTrue(ipr1.in_range('127.0.0.1'))
+
+    def test_100_to_end(self):
+        ipr1 = IPRange(ip_from='100.1.1.1', ip_to='255.255.255.255')
+        self.assertTrue(ipr1.in_range('127.0.0.1'))
+
+    def test_exact_ip(self):
+        ipr1 = IPRange(ip_from='127.0.0.1')
+        self.assertTrue(ipr1.in_range('127.0.0.1'))
+        self.assertFalse(ipr1.in_range('127.0.0.0'))
+        self.assertFalse(ipr1.in_range('127.0.0.2'))
+        self.assertFalse(ipr1.in_range('255.255.255.255'))
+
 
 def post_and_get_json(to, args_dict, client=Client()):
     response_obj = client.post(to, args_dict)
@@ -166,4 +188,3 @@ class TokenAuthTestCase(_RestTC):
             'token': 'bad token',
         })
         self.assertEqual(resp.status_code, 403)
-
