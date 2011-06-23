@@ -4,11 +4,12 @@ from django.http import HttpResponse
 
 from models import QueueItem
 from forms import  SendForm
+from smsgate.auth import permission_required_or_403
 
 def response_json(response_dict):
     return HttpResponse(json.dumps(response_dict), mimetype='application/javascript')
 
-@login_required
+@permission_required_or_403('smsgate.add_queueitem')
 def send(request):
     if request.method == 'POST':
         form = SendForm(request.POST)

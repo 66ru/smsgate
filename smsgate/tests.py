@@ -1,5 +1,7 @@
 #-*- coding: UTF-8 -*-
 import json
+from django.contrib.auth.models import Permission, Group
+from django.contrib.contenttypes.models import ContentType
 
 from django.utils import unittest
 from django.test.client import Client
@@ -8,20 +10,38 @@ from smsgate.models import QueueItem
 from models import User, Partner
 
 def post_and_get_json(to, args_dict, client=Client()):
-    str_response = client.post(to, args_dict)
-    return json.loads(str_response.content)
+    response_obj = client.post(to, args_dict)
+    return json.loads(response_obj.content)
 
 
 class SendTestCase(unittest.TestCase):
     def setUp(self):
-        self.user = User.objects.create_user('test', 'test', password='test')
+        partners_group = Group(name='partners')
+        partners_group.save()
 
-        self.client = Client()
-        self.client.login(username='test', password='test')
+        qi_ct = ContentType.objects.get(app_label='smsgate', model='queueitem')
+        can_add_permission = Permission.objects.get(codename='add_queueitem',
+                                                    content_type=qi_ct)
+        partners_group.permissions.add(can_add_permission)
+        self.partners_group = partners_group
+
+        partner_user = User.objects.create_user('test', 'test', password='test')
+        partner_user.groups.add(partners_group)
+        self.partner_user = partner_user
+
+        self.other_user = User.objects.create_user('other', 'other', password='other')
+
+        self.partner_client = Client()
+        self.partner_client.login(username='test', password='test')
+
+        self.other_client = Client()
+        self.other_client.login(username='other', password='other')
 
     def tearDown(self):
-        self.client.logout()
-        self.user.delete()
+        self.partner_client.logout()
+        self.partner_user.delete()
+        self.partners_group.delete()
+        self.other_user.delete()
 
     def test_ok(self):
         """
@@ -29,17 +49,26 @@ class SendTestCase(unittest.TestCase):
         """
         message = 'Some message for you man'
 
-        resp = post_and_get_json('/sms/send/', {
+        addr = '/sms/send/'
+        params = {
             'message': message,
             'phone_n': '79001234567',
-        }, client=self.client)
+        }
 
-        # проверяем статус...
-        self.assertEqual(resp['status'], 0)
-        queue_id = resp['id']
+        _helper = lambda client: post_and_get_json(addr, params, client=client)
+
+        # пытаемся отправить от партнера с правами
+        partner_resp = _helper(self.partner_client)
+
+        self.assertEqual(partner_resp['status'], 0)
+        queue_id = partner_resp['id']
 
         qi = QueueItem.objects.get(pk=queue_id)
         self.assertEqual(message, qi.message)
+
+        # пытаемся отправить от партнера без прав (должно вернуть 403)
+        other_resp = self.other_client.post(addr, params)
+        self.assertEquals(other_resp.status_code, 403)
 
     def test_comment(self):
         """
@@ -51,20 +80,20 @@ class SendTestCase(unittest.TestCase):
             'message': 'msg',
             'phone_n': '79001234567',
             'comment': comment
-        }, client=self.client)
+        }, client=self.partner_client)
 
         queue_id = resp['id']
         qi = QueueItem.objects.get(pk=queue_id)
         self.assertEqual(qi.comment, comment)
 
     def test_invalid_form(self):
-        resp = post_and_get_json('/sms/send/', {}, client=self.client)
+        resp = post_and_get_json('/sms/send/', {}, client=self.partner_client)
         self.assertEqual(resp['status'], 2)
         self.assertTrue('message' in resp['form_errors'])
 
     def test_invalid_method(self):
         # GET is not allowed
-        resp = self.client.get('/sms/send/')
+        resp = self.partner_client.get('/sms/send/')
         self.assertEqual(resp.status_code, 405)
 
 
@@ -114,13 +143,3 @@ class TokenAuthTestCase(unittest.TestCase):
         backend = PartnerTokenBackend()
         u = backend.authenticate(id=self.user.id, token=self.token)
         self.assertEqual(u, self.user)
-
-    def test_auth(self):
-        client = Client()
-        resp = post_and_get_json('/sms/send/', {
-            'token': self.token,
-            'id': self.user.id,
-            'message': 'msg',
-            'phone_n': '79001234567',
-        }, client=client)
-        self.assertEqual(resp['status'], 0)
