@@ -34,6 +34,10 @@ class _RestTC(unittest.TestCase):
         partner_user.groups.add(partners_group)
         self.partner_user = partner_user
 
+        partner = Partner(token='partner_token', user=partner_user)
+        partner.save()
+        self.partner = partner
+
         self.other_user = User.objects.create_user('other', 'other', password='other')
 
         self.partner_client = Client()
@@ -133,23 +137,33 @@ class StatusTestCase(_RestTC):
         Если указан неподходящий id, то
         должен вернуться код 404.
         """
-        resp = self.partner_client.get('/sms/status/%s/' % 9000)
+        resp = self.partner_client.post('/sms/status/%s/' % 9000)
         self.assertEqual(resp.status_code, 404)
 
 
-class TokenAuthTestCase(unittest.TestCase):
+class TokenAuthTestCase(_RestTC):
     def setUp(self):
-        self.user = User.objects.create_user('test', 'test', password='test')
-
-        self.token = 'test'
-        self.partner = Partner(user=self.user, token=self.token)
-        self.partner.save()
-
-    def tearDown(self):
-        self.user.delete()
-        self.partner.delete()
+        super(TokenAuthTestCase, self).setUp()
+        self.backend = PartnerTokenBackend()
 
     def test_backend_authenticate(self):
-        backend = PartnerTokenBackend()
-        u = backend.authenticate(id=self.user.id, token=self.token)
-        self.assertEqual(u, self.user)
+        u = self.backend.authenticate(id=self.partner_user.id,
+                                      token=self.partner.token)
+        self.assertEqual(u, self.partner_user)
+
+    def test_all_cycle_authnticate(self):
+        c = Client()
+        # good token
+        resp = c.post('/sms/status/9000/', {
+            'id': self.partner.id,
+            'token': self.partner.token,
+        })
+        self.assertEqual(resp.status_code, 404)
+
+        # bad token
+        resp = c.post('/sms/status/9000/', {
+            'id': self.partner.id,
+            'token': 'bad token',
+        })
+        self.assertEqual(resp.status_code, 403)
+

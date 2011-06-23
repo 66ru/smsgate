@@ -9,4 +9,5 @@ class PartnerPostTokenMiddleware(object):
             id = int(request.POST['id'])
             token = request.POST['token']
             user = authenticate(id=id, token=token)
-            request.user = user
+            if user:
+                request.user = user
