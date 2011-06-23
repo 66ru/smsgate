@@ -30,6 +30,8 @@ def send(request):
 def status(request, item_id):
     try:
         qi = QueueItem.objects.get(pk=item_id)
+        if qi.user != request.user: # something like object level permissions
+            return HttpResponse(status=403)
         return response_json({'status': qi.status, 'status_message': qi.status_message})
     except QueueItem.DoesNotExist:
         return HttpResponse(status=404)
