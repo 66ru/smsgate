@@ -14,7 +14,7 @@ def post_and_get_json(to, args_dict, client=Client()):
     return json.loads(response_obj.content)
 
 
-class SendTestCase(unittest.TestCase):
+class _RestTC(unittest.TestCase):
     def setUp(self):
         partners_group = Group(name='partners')
         partners_group.save()
@@ -23,6 +23,11 @@ class SendTestCase(unittest.TestCase):
         can_add_permission = Permission.objects.get(codename='add_queueitem',
                                                     content_type=qi_ct)
         partners_group.permissions.add(can_add_permission)
+
+        can_view_permission = Permission.objects.get(codename='view_queueitem',
+                                                     content_type=qi_ct)
+        partners_group.permissions.add(can_view_permission)
+
         self.partners_group = partners_group
 
         partner_user = User.objects.create_user('test', 'test', password='test')
@@ -43,6 +48,7 @@ class SendTestCase(unittest.TestCase):
         self.partners_group.delete()
         self.other_user.delete()
 
+class SendTestCase(_RestTC):
     def test_ok(self):
         """
         Полностью валидный вариант.
@@ -97,24 +103,18 @@ class SendTestCase(unittest.TestCase):
         self.assertEqual(resp.status_code, 405)
 
 
-class StatusTestCase(unittest.TestCase):
+class StatusTestCase(_RestTC):
     def setUp(self):
-        self.user = User.objects.create_user('test', 'test', password='test')
+        super(StatusTestCase, self).setUp()
         
-        qi = QueueItem(phone_n='79001234567', message='hello!', user=self.user)
+        qi = QueueItem(phone_n='79001234567', message='hello!', 
+                       user=self.partner_user)
         qi.save()
         self.qi = qi
 
-        self.client = Client()
-        self.client.login(username='test', password='test')
-
-    def tearDown(self):
-        self.user.delete()
-        self.qi.delete()
-        self.client.logout()
-
     def test_ok_id(self):
-        resp = post_and_get_json('/sms/status/%s/' % self.qi.id, {}, client=self.client)
+        resp = post_and_get_json('/sms/status/%s/' % self.qi.id, {},
+                                 client=self.partner_client)
         self.assertEquals(resp['status'], '0')
         self.assertEquals(self.qi.status, '0')
 
@@ -123,7 +123,7 @@ class StatusTestCase(unittest.TestCase):
         Если указан неподходящий id, то
         должен вернуться код 404.
         """
-        resp = self.client.get('/sms/status/%s/' % 9000)
+        resp = self.partner_client.get('/sms/status/%s/' % 9000)
         self.assertEqual(resp.status_code, 404)
 
 

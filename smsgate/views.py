@@ -27,7 +27,7 @@ def send(request):
     else:
         return HttpResponse(status=405) # method not allowed
 
-@login_required
+@permission_required_or_403('smsgate.view_queueitem')
 def status(request, item_id):
     try:
         qi = QueueItem.objects.get(pk=item_id)

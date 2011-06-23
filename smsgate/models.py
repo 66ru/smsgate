@@ -36,3 +36,6 @@ class QueueItem(models.Model):
     status = models.CharField(max_length=1, choices=STATUS_CHOICES,
                               default='0')
     status_message = models.TextField(blank=True)
+
+    class Meta:
+        permissions = (('view_queueitem', 'Can view queue items'),)
