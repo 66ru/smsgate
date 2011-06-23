@@ -22,7 +22,7 @@ class Partner(models.Model):
 
 class IPRange(models.Model):
     ip_from = IPAddressField()
-    ip_to = IPAddressField(blank=True)
+    ip_to = IPAddressField(blank=True, null=True)
     partner = models.ForeignKey(Partner, related_name='ips_allowed')
 
     @staticmethod

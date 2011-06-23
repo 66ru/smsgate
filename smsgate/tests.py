@@ -164,6 +164,15 @@ class StatusTestCase(_RestTC):
 
 
 class TokenAuthTestCase(_RestTC):
+    def _assert_status_check(self, status_code, partner_id=None, token=None):
+        c = Client()
+        # good token
+        resp = c.post('/sms/status/9000/', {
+            'id': partner_id or self.partner.id,
+            'token': token or self.partner.token,
+        })
+        self.assertEqual(resp.status_code, status_code)
+
     def setUp(self):
         super(TokenAuthTestCase, self).setUp()
         self.backend = PartnerTokenBackend()
@@ -173,18 +182,43 @@ class TokenAuthTestCase(_RestTC):
                                       token=self.partner.token)
         self.assertEqual(u, self.partner_user)
 
-    def test_all_cycle_authnticate(self):
+    def test_full_cycle_authnticate(self):
         c = Client()
         # good token
-        resp = c.post('/sms/status/9000/', {
-            'id': self.partner.id,
-            'token': self.partner.token,
-        })
-        self.assertEqual(resp.status_code, 404)
+        self._assert_status_check(404)
 
         # bad token
-        resp = c.post('/sms/status/9000/', {
-            'id': self.partner.id,
-            'token': 'bad token',
-        })
-        self.assertEqual(resp.status_code, 403)
+        self._assert_status_check(403, token='bad_token')
+
+class IPTests(TokenAuthTestCase):
+    def setUp(self):
+        super(IPTests, self).setUp()
+        self.ipr = None
+
+    def tearDown(self):
+        super(IPTests, self).tearDown()
+        if self.ipr is not None:
+            self.ipr.delete()
+
+    def test_ip_only_one_allowed_ok(self):
+        self.ipr = IPRange.objects.create(ip_from='127.0.0.1', partner=self.partner)
+        self.ipr.save()
+
+        self.test_full_cycle_authnticate()
+
+    def test_ip_only_one_allowed_other(self):
+        self.ipr = IPRange.objects.create(ip_from='127.0.0.0', partner=self.partner)
+        self.ipr.save()
+
+        self._assert_status_check(403)
+
+    def test_ip_range_allowed_ok(self):
+        self.ipr = IPRange.objects.create(ip_from='127.0.0.1', ip_to='255.255.0.0', partner=self.partner)
+        self.ipr.save()
+
+        self.test_full_cycle_authnticate()
+
+    def test_ip_range_allowed_other(self):
+        self.ipr = IPRange.objects.create(ip_from='127.0.0.2', ip_to='255.255.0.0', partner=self.partner)
+        self.ipr.save()
+        self._assert_status_check(403)
