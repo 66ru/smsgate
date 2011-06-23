@@ -21,7 +21,7 @@ def user_passes_test_or_403(test_func):
         return _checklogin
     return _dec
 
-def permission_required_or_403(perm, login_url=None):
+def permission_required_or_403(perm):
     """
     Decorator for views that checks whether a user has a particular permission
     enabled, redirecting to the log-in page or rendering a 403 as necessary.
