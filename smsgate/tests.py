@@ -113,10 +113,15 @@ class StatusTestCase(_RestTC):
         self.qi = qi
 
     def test_ok_id(self):
-        resp = post_and_get_json('/sms/status/%s/' % self.qi.id, {},
+        addr = '/sms/status/%s/' % self.qi.id
+        params = {}
+        resp = post_and_get_json(addr, params,
                                  client=self.partner_client)
         self.assertEquals(resp['status'], '0')
         self.assertEquals(self.qi.status, '0')
+
+        resp_to_other = self.other_client.post(addr, params)
+        self.assertEquals(resp_to_other.status_code, 403)
 
     def test_bad_id(self):
         """
