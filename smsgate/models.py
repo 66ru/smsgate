@@ -8,6 +8,22 @@ from django.db.models.fields import IPAddressField
 from django.conf import settings
 
 
+class GateSettings(models.Model):
+    gate_module = models.CharField(max_length=100,
+                                   choices=[(g, g) for g in settings.SMSGATE_GATES_ENABLED],
+                                   unique=True)
+
+    config = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return '%s gate' % self.gate_module
+
+    def get_config_parser(self):
+        conf_parser = ConfigParser.RawConfigParser()
+        conf_parser.readfp(io.BytesIO(self.config))
+        return conf_parser
+
+
 def randstring_creator(count):
     def _randstring():
         a = string.ascii_letters + string.digits
@@ -24,25 +40,10 @@ class Partner(models.Model):
     # messaging properties
     sms_from = models.CharField(max_length=11, blank=True)
 
+    gate = models.ForeignKey(GateSettings)
+
     def __unicode__(self):
         return '%s (partner)' % self.user.username
-
-
-class GateSettings(models.Model):
-    gate = models.CharField(max_length=100,
-                            choices=[(g, g)
-                                     for g in settings.SMSGATE_GATES_ENABLED],
-                            unique=True)
-
-    config = models.TextField(blank=True)
-
-    def __unicode__(self):
-        return '%s gate' % self.gate
-
-    def get_config_parser(self):
-        conf_parser = ConfigParser.RawConfigParser(allow_no_value=True)
-        conf_parser.readfp(io.BytesIO(self.config))
-        return conf_parser
 
 
 class IPRange(models.Model):
@@ -90,6 +91,9 @@ class QueueItem(models.Model):
 
     class Meta:
         permissions = (('view_queueitem', 'Can view queue items'),)
+
+    def __unicode__(self):
+        return '%s: %s...' % (self.phone_n, self.message[:15],)
 
 
 class SmsLog(models.Model):

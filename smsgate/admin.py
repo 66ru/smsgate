@@ -12,5 +12,6 @@ class PartnerAdmin(admin.ModelAdmin):
     ]
 
 
+admin.site.register(QueueItem)
 admin.site.register(Partner, PartnerAdmin)
 admin.site.register(GateSettings)

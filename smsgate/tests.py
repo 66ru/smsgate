@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import unittest
 from django.test.client import Client
 from smsgate.auth.backends import PartnerTokenBackend
-from smsgate.models import QueueItem, IPRange, SmsLog
+from smsgate.models import QueueItem, IPRange, SmsLog, GateSettings
 from models import User, Partner
 
 
@@ -56,7 +56,11 @@ class _RestTC(unittest.TestCase):
         partner_user.groups.add(partners_group)
         self.partner_user = partner_user
 
-        partner = Partner(token='partner_token', user=partner_user)
+        gate_settings = GateSettings(gate_module='smsgate.gates.test_gate')
+        gate_settings.save()
+        self.gate_settings = gate_settings
+
+        partner = Partner(token='partner_token', user=partner_user, gate=gate_settings)
         partner.save()
         self.partner = partner
 
@@ -73,6 +77,7 @@ class _RestTC(unittest.TestCase):
         self.partner_user.delete()
         self.partners_group.delete()
         self.other_user.delete()
+        self.gate_settings.delete()
         SmsLog.objects.all().delete()
 
 

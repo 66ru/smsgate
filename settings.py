@@ -105,4 +105,5 @@ AUTHENTICATION_BACKENDS = (
 
 SMSGATE_GATES_ENABLED = (
     'smsgate.gates.websms',
+    'smsgate.gates.test_gate',
 )
