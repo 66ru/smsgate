@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import unittest
 from django.test.client import Client
 from smsgate.auth.backends import PartnerTokenBackend
-from smsgate.models import QueueItem, IPRange
+from smsgate.models import QueueItem, IPRange, SmsLog
 from models import User, Partner
 
 
@@ -73,6 +73,7 @@ class _RestTC(unittest.TestCase):
         self.partner_user.delete()
         self.partners_group.delete()
         self.other_user.delete()
+        SmsLog.objects.all().delete()
 
 
 class SendTestCase(_RestTC):
@@ -83,9 +84,10 @@ class SendTestCase(_RestTC):
         message = 'Some message for you man'
 
         addr = '/sms/send/'
+        phone_n = '79001234567'
         params = {
             'message': message,
-            'phone_n': '79001234567',
+            'phone_n': phone_n,
             }
 
         _helper = lambda client: post_and_get_json(addr, params, client=client)
@@ -98,6 +100,10 @@ class SendTestCase(_RestTC):
 
         qi = QueueItem.objects.get(pk=queue_id)
         self.assertEqual(message, qi.message)
+        self.assertEqual(phone_n, qi.phone_n)
+
+        # log appended:
+        self.assertTrue(SmsLog.objects.filter(item=qi).exists())
 
         # пытаемся отправить от партнера без прав (должно вернуть 403)
         other_resp = self.other_client.post(addr, params)
