@@ -104,6 +104,7 @@ class SendTestCase(_RestTC):
         queue_id = partner_resp['id']
 
         qi = QueueItem.objects.get(pk=queue_id)
+        self.assertEqual(qi.partner, self.partner)
         self.assertEqual(message, qi.message)
         self.assertEqual(phone_n, qi.phone_n)
 
@@ -151,7 +152,7 @@ class StatusTestCase(_RestTC):
         super(StatusTestCase, self).setUp()
 
         qi = QueueItem(phone_n='79001234567', message='hello!',
-                       user=self.partner_user)
+                       partner=self.partner)
         qi.save()
         self.qi = qi
 

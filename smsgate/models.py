@@ -74,7 +74,7 @@ class IPRange(models.Model):
 class QueueItem(models.Model):
     phone_n = models.CharField(max_length=15)
     message = models.TextField()
-    user = models.ForeignKey(User, db_index=True)
+    partner = models.ForeignKey(Partner, db_index=True)
     comment = models.TextField(blank=True)
 
     created = models.DateTimeField(auto_now_add=True)

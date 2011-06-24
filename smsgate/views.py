@@ -22,7 +22,7 @@ def send(request):
             item = QueueItem(phone_n=phone_n,
                              message=message,
                              comment=comment,
-                             user=request.user)
+                             partner=request.user.get_profile())
             item.save()
 
             SmsLog.objects.create(item=item, text='Added: %s; phone_n: %s; message: %s' %
@@ -39,7 +39,7 @@ def send(request):
 def status(request, item_id):
     try:
         qi = QueueItem.objects.get(pk=item_id)
-        if qi.user != request.user: # something like object level permissions
+        if qi.partner != request.user.get_profile(): # something like object level permissions
             return HttpResponse(status=403)
         return response_json({'status': qi.status, 'status_message': qi.status_message})
     except QueueItem.DoesNotExist:
