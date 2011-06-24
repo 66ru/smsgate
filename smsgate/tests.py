@@ -74,6 +74,7 @@ class _RestTC(unittest.TestCase):
         self.partners_group.delete()
         self.other_user.delete()
 
+
 class SendTestCase(_RestTC):
     def test_ok(self):
         """
@@ -85,7 +86,7 @@ class SendTestCase(_RestTC):
         params = {
             'message': message,
             'phone_n': '79001234567',
-        }
+            }
 
         _helper = lambda client: post_and_get_json(addr, params, client=client)
 
@@ -137,8 +138,8 @@ class SendTestCase(_RestTC):
 class StatusTestCase(_RestTC):
     def setUp(self):
         super(StatusTestCase, self).setUp()
-        
-        qi = QueueItem(phone_n='79001234567', message='hello!', 
+
+        qi = QueueItem(phone_n='79001234567', message='hello!',
                        user=self.partner_user)
         qi.save()
         self.qi = qi
@@ -170,7 +171,7 @@ class TokenAuthTestCase(_RestTC):
         resp = c.post('/sms/status/9000/', {
             'id': partner_id or self.partner.id,
             'token': token or self.partner.token,
-        })
+            })
         self.assertEqual(resp.status_code, status_code)
 
     def setUp(self):
@@ -188,6 +189,7 @@ class TokenAuthTestCase(_RestTC):
 
         # bad token
         self._assert_status_check(403, token='bad_token')
+
 
 class IPTests(TokenAuthTestCase):
     def setUp(self):
