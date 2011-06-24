@@ -71,5 +71,7 @@ class QueueItem(models.Model):
         permissions = (('view_queueitem', 'Can view queue items'),)
 
 
-# TODO: Log!
-# TODO: Answers?
+class SmsLog(models.Model):
+    item = models.ForeignKey(QueueItem)
+    time = models.DateTimeField(auto_now_add=True)
+    text = models.TextField()
