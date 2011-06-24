@@ -16,6 +16,11 @@ class Partner(models.Model):
     user = models.ForeignKey(User, unique=True, related_name='partner')
     token = models.CharField(max_length=20, unique=True,
                              default=randstring_creator(20))
+
+    # messaging properties
+    sms_from = models.CharField(max_length=11, blank=True) # TODO: websms = 11. others??
+    sms_translit = models.BooleanField()
+
     def __unicode__(self):
         return '%s (partner)' % self.user.username
 
@@ -64,3 +69,7 @@ class QueueItem(models.Model):
 
     class Meta:
         permissions = (('view_queueitem', 'Can view queue items'),)
+
+
+# TODO: Log!
+# TODO: Answers?
