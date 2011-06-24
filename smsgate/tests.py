@@ -183,7 +183,6 @@ class TokenAuthTestCase(_RestTC):
         self.assertEqual(u, self.partner_user)
 
     def test_full_cycle_authnticate(self):
-        c = Client()
         # good token
         self._assert_status_check(404)
 
