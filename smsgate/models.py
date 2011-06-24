@@ -46,7 +46,7 @@ class IPRange(models.Model):
 
 class QueueItem(models.Model):
     phone_n = models.CharField(max_length=15)
-    message = models.CharField(max_length=140)
+    message = models.TextField()
     user = models.ForeignKey(User)
     comment = models.TextField(blank=True)
 
