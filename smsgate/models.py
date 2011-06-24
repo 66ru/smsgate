@@ -25,6 +25,14 @@ class Partner(models.Model):
         return '%s (partner)' % self.user.username
 
 
+class GateSettings(models.Model):
+    _gates = ('dummy',)
+    gate = models.CharField(max_length=20, choices=[(g, g) for g in _gates], unique=True)
+
+    def __unicode__(self):
+        return '%s gate' % self.gate
+
+
 class IPRange(models.Model):
     ip_from = IPAddressField()
     ip_to = IPAddressField(blank=True, null=True)
