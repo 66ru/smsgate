@@ -13,13 +13,12 @@ def randstring_creator(count):
 
 
 class Partner(models.Model):
-    user = models.ForeignKey(User, unique=True, related_name='partner')
+    user = models.ForeignKey(User, unique=True, related_name='partner', db_index=True)
     token = models.CharField(max_length=20, unique=True,
                              default=randstring_creator(20))
 
     # messaging properties
-    sms_from = models.CharField(max_length=11, blank=True) # TODO: websms = 11. others??
-    sms_translit = models.BooleanField()
+    sms_from = models.CharField(max_length=11, blank=True)
 
     def __unicode__(self):
         return '%s (partner)' % self.user.username
@@ -28,7 +27,7 @@ class Partner(models.Model):
 class IPRange(models.Model):
     ip_from = IPAddressField()
     ip_to = IPAddressField(blank=True, null=True)
-    partner = models.ForeignKey(Partner, related_name='ips_allowed')
+    partner = models.ForeignKey(Partner, related_name='ips_allowed', db_index=True)
 
     @staticmethod
     def _ipv4_to_int(ip):
@@ -52,7 +51,7 @@ class IPRange(models.Model):
 class QueueItem(models.Model):
     phone_n = models.CharField(max_length=15)
     message = models.TextField()
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, db_index=True)
     comment = models.TextField(blank=True)
 
     created = models.DateTimeField(auto_now_add=True)
@@ -72,6 +71,6 @@ class QueueItem(models.Model):
 
 
 class SmsLog(models.Model):
-    item = models.ForeignKey(QueueItem)
+    item = models.ForeignKey(QueueItem, db_index=True)
     time = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
