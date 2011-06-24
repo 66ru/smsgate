@@ -102,3 +102,7 @@ AUTH_PROFILE_MODULE = 'smsgate.Partner'
 AUTHENTICATION_BACKENDS = (
     'smsgate.auth.backends.PartnerTokenBackend',
     'django.contrib.auth.backends.ModelBackend',)
+
+SMSGATE_GATES_ENABLED = (
+    'smsgate.gates.websms',
+)

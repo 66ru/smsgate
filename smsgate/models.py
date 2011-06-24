@@ -1,8 +1,11 @@
+import io
 import string
 import random
+import ConfigParser
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.fields import IPAddressField
+from django.conf import settings
 
 
 def randstring_creator(count):
@@ -26,11 +29,20 @@ class Partner(models.Model):
 
 
 class GateSettings(models.Model):
-    _gates = ('dummy',)
-    gate = models.CharField(max_length=20, choices=[(g, g) for g in _gates], unique=True)
+    gate = models.CharField(max_length=100,
+                            choices=[(g, g)
+                                     for g in settings.SMSGATE_GATES_ENABLED],
+                            unique=True)
+
+    config = models.TextField(blank=True)
 
     def __unicode__(self):
         return '%s gate' % self.gate
+
+    def get_config_parser(self):
+        conf_parser = ConfigParser.RawConfigParser(allow_no_value=True)
+        conf_parser.readfp(io.BytesIO(self.config))
+        return conf_parser
 
 
 class IPRange(models.Model):
