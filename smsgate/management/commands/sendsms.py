@@ -37,7 +37,6 @@ class Command(BaseCommand):
                 qi.status = STATUS_OK
             except ProviderFailure:
                 qi.status = STATUS_PROVIDER_FAILURE
-            except Exception as ex:
-                print ex
-                qi.status = STATUS_INNER_FAILURE
-            qi.save()
+            #except Exception as ex:
+            #    qi.status = STATUS_INNER_FAILURE
+            #qi.save()
