@@ -1,4 +1,6 @@
 #-*- coding: UTF-8 -*-
+import ConfigParser
+import io
 import json
 from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
@@ -6,8 +8,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import unittest
 from django.test.client import Client
 from smsgate.auth.backends import PartnerTokenBackend
+from smsgate.gates.exceptions import ProviderFailure
 from smsgate.models import QueueItem, IPRange, SmsLog, GateSettings
 from models import User, Partner
+
+from smsgate.gates.websms import GateInterface as WebSmsGateInterface
 
 
 class IPRangesTest(unittest.TestCase):
@@ -36,7 +41,7 @@ def post_and_get_json(to, args_dict, client=Client()):
     return json.loads(response_obj.content)
 
 
-class _RestTC(unittest.TestCase):
+class BaseRestTestCase(unittest.TestCase):
     def setUp(self):
         partners_group = Group(name='partners')
         partners_group.save()
@@ -72,6 +77,11 @@ class _RestTC(unittest.TestCase):
         self.other_client = Client()
         self.other_client.login(username='other', password='other')
 
+        qi = QueueItem(phone_n='79001234567', message='hello!',
+                       partner=self.partner)
+        qi.save()
+        self.qi = qi
+
     def tearDown(self):
         self.partner_client.logout()
         self.partner_user.delete()
@@ -81,7 +91,7 @@ class _RestTC(unittest.TestCase):
         SmsLog.objects.all().delete()
 
 
-class SendTestCase(_RestTC):
+class SendTestCase(BaseRestTestCase):
     def test_ok(self):
         """
         Полностью валидный вариант.
@@ -147,15 +157,7 @@ class SendTestCase(_RestTC):
         self.assertEqual(resp.status_code, 405)
 
 
-class StatusTestCase(_RestTC):
-    def setUp(self):
-        super(StatusTestCase, self).setUp()
-
-        qi = QueueItem(phone_n='79001234567', message='hello!',
-                       partner=self.partner)
-        qi.save()
-        self.qi = qi
-
+class StatusTestCase(BaseRestTestCase):
     def test_ok_id(self):
         addr = '/sms/status/%s/' % self.qi.id
         params = {}
@@ -176,7 +178,7 @@ class StatusTestCase(_RestTC):
         self.assertEqual(resp.status_code, 404)
 
 
-class TokenAuthTestCase(_RestTC):
+class TokenAuthTestCase(BaseRestTestCase):
     def _assert_status_check(self, status_code, partner_id=None, token=None):
         c = Client()
         # good token
@@ -235,3 +237,26 @@ class IPTests(TokenAuthTestCase):
         self.ipr = IPRange.objects.create(ip_from='127.0.0.2', ip_to='255.255.0.0', partner=self.partner)
         self.ipr.save()
         self._assert_status_check(403)
+
+
+class WebSmsGateInterfaceTest(BaseRestTestCase):
+    def setUp(self):
+        super(WebSmsGateInterfaceTest, self).setUp()
+        bad_config = "[Provider]\n" + \
+        "http_username = user\n" + \
+        "http_password = bad_password\n"
+
+        print bad_config
+
+        conf_parser = ConfigParser.RawConfigParser()
+        conf_parser.readfp(io.BytesIO(bad_config))
+
+        self.overriders = {
+            'test': 1
+        }
+
+        self.gi = WebSmsGateInterface(conf_parser)
+
+
+    def test_send(self):
+        self.assertRaises(ProviderFailure, lambda: self.gi.send(self.qi, **self.overriders))

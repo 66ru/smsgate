@@ -16,7 +16,7 @@ SEND_ADDR = 'http://websms.ru/http_in5.asp'
 
 class GateInterface(object):
     def __init__(self, config):
-        conf_get = partial(config.get, 'provider')
+        conf_get = partial(config.get, 'Provider')
 
         self.http_username = conf_get('http_username')
         self.http_password = conf_get('http_password')
@@ -46,6 +46,7 @@ class GateInterface(object):
         status = resp_cp.get('Common', 'error_num')
         if status == 'OK':
             SmsLog.objects.create(item=queue_item, text='Sent OK')
+            return True
         else:
             errortext = 'Error sending: %s' % status
             SmsLog.objects.create(item=queue_item, text=errortext)
