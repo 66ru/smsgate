@@ -107,3 +107,8 @@ SMSGATE_GATES_ENABLED = (
     'smsgate.gates.websms',
     'smsgate.gates.test_gate',
 )
+
+try:
+    from settings_local import *
+except ImportError:
+    pass

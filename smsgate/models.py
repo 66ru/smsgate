@@ -20,7 +20,7 @@ class GateSettings(models.Model):
 
     def get_config_parser(self):
         conf_parser = ConfigParser.RawConfigParser()
-        conf_parser.readfp(io.BytesIO(self.config))
+        conf_parser.readfp(io.BytesIO(str(self.config)))
         return conf_parser
 
 
@@ -83,7 +83,8 @@ class QueueItem(models.Model):
     STATUS_CHOICES = (
             ('0', 'IN PROGRESS'),
             ('1', 'OK'),
-            ('2', 'FAILED'),
+            ('2', 'INNER FAILURE'),
+            ('3', 'PROVIDER FAILURE'),
         )
     status = models.CharField(max_length=1, choices=STATUS_CHOICES,
                               default='0')
