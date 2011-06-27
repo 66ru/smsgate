@@ -1,3 +1,4 @@
+#-*- coding: UTF-8 -*-
 from _functools import partial
 import urllib
 import urllib2
@@ -22,7 +23,7 @@ class GateInterface(object):
             'http_username': self.http_username,
             'http_password': self.http_password,
 
-            'message': queue_item.message, #TODO: cp1251
+            'message': queue_item.message.encode('cp1251'),
             'phone_list': queue_item.phone_n,
             'packet_id': queue_item.id,
         }
@@ -35,4 +36,5 @@ class GateInterface(object):
         params = urllib.urlencode(d)
         
         response = urllib2.urlopen('%s?%s' % (SEND_ADDR, params,)).read()
+
         print response

@@ -1,7 +1,7 @@
 #-*- coding: UTF-8 -*-
 from django.core.management.base import BaseCommand
-from smsgate.gates.exceptions import InnerFailure, ProviderFailure
-from smsgate.models import QueueItem, GateSettings, Partner
+from smsgate.gates.exceptions import ProviderFailure
+from smsgate.models import QueueItem, GateSettings, Partner, STATUS_IN_PROGRESS, STATUS_OK, STATUS_PROVIDER_FAILURE, STATUS_INNER_FAILURE
 
 class Command(BaseCommand):
     """
@@ -30,13 +30,14 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-        for qi in QueueItem.objects.filter(status='0'):
+        for qi in QueueItem.objects.filter(status=STATUS_IN_PROGRESS):
             gate = self.partners_gates[qi.partner_id]
             try:
                 gate.send(qi)
-                qi.status = '1'
-            except InnerFailure:
-                qi.status = '2'
+                qi.status = STATUS_OK
             except ProviderFailure:
-                qi.status = '3'
-            #qi.save()
+                qi.status = STATUS_PROVIDER_FAILURE
+            except Exception as ex:
+                print ex
+                qi.status = STATUS_INNER_FAILURE
+            qi.save()

@@ -70,6 +70,10 @@ class IPRange(models.Model):
         else:
             return ip_str == self.ip_from
 
+STATUS_IN_PROGRESS = '0'
+STATUS_OK = '1'
+STATUS_INNER_FAILURE = '2'
+STATUS_PROVIDER_FAILURE = '3'
 
 class QueueItem(models.Model):
     phone_n = models.CharField(max_length=15)
@@ -81,10 +85,10 @@ class QueueItem(models.Model):
     changed = models.DateTimeField(auto_now=True)
 
     STATUS_CHOICES = (
-            ('0', 'IN PROGRESS'),
-            ('1', 'OK'),
-            ('2', 'INNER FAILURE'),
-            ('3', 'PROVIDER FAILURE'),
+            (STATUS_IN_PROGRESS, 'IN PROGRESS'),
+            (STATUS_OK, 'OK'),
+            (STATUS_INNER_FAILURE, 'INNER FAILURE'),
+            (STATUS_PROVIDER_FAILURE, 'PROVIDER FAILURE'),
         )
     status = models.CharField(max_length=1, choices=STATUS_CHOICES,
                               default='0')
