@@ -39,13 +39,14 @@ class GateInterface(object):
         d.update(params)
         params = urllib.urlencode(d)
 
-        resp_text = urllib2.urlopen('%s?%s' % (SEND_ADDR, params,)).read()
+        resp = urllib2.urlopen('%s?%s' % (SEND_ADDR, params,))
         resp_cp = ConfigParser.RawConfigParser()
-        resp_cp.readfp(io.BytesIO(resp_text))
+        resp_cp.readfp(resp)
         
         status = resp_cp.get('Common', 'error_num')
         if status == 'OK':
             SmsLog.objects.create(item=queue_item, text='Sent OK')
         else:
-            SmsLog.objects.create(item=queue_item, text='Error sending: %s' % resp_text)
-            raise ProviderFailure(resp_text)
+            errortext = 'Error sending: %s' % status
+            SmsLog.objects.create(item=queue_item, text=errortext)
+            raise ProviderFailure(errortext)
