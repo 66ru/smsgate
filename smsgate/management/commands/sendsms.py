@@ -39,4 +39,4 @@ class Command(BaseCommand):
                 qi.status = '2'
             except ProviderFailure:
                 qi.status = '3'
-            qi.save()
+            #qi.save()
