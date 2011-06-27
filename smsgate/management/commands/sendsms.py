@@ -35,8 +35,11 @@ class Command(BaseCommand):
             try:
                 gate.send(qi)
                 qi.status = STATUS_OK
-            except ProviderFailure:
+            except ProviderFailure as ex:
                 qi.status = STATUS_PROVIDER_FAILURE
-            #except Exception as ex:
-            #    qi.status = STATUS_INNER_FAILURE
-            #qi.save()
+                qi.status_message = str(ex)
+            except Exception as ex:
+                qi.status = STATUS_INNER_FAILURE
+                qi.status_message = str(ex)
+            finally:
+                qi.save()

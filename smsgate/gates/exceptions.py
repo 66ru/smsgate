@@ -1,2 +1,2 @@
-class ProviderFailure(BaseException):
+class ProviderFailure(Exception):
     pass

@@ -1,8 +1,10 @@
 #-*- coding: UTF-8 -*-
 import ConfigParser
 from _functools import partial
+import io
 import urllib
 import urllib2
+from smsgate.gates.exceptions import ProviderFailure
 from smsgate.models import SmsLog
 
 SEND_ADDR = 'http://websms.ru/http_in5.asp'
@@ -37,12 +39,13 @@ class GateInterface(object):
         d.update(params)
         params = urllib.urlencode(d)
 
-        resp = urllib2.urlopen('%s?%s' % (SEND_ADDR, params,))
+        resp_text = urllib2.urlopen('%s?%s' % (SEND_ADDR, params,)).read()
         resp_cp = ConfigParser.RawConfigParser()
-        resp_cp.readfp(resp)
+        resp_cp.readfp(io.BytesIO(resp_text))
         
         status = resp_cp.get('Common', 'error_num')
         if status == 'OK':
             SmsLog.objects.create(item=queue_item, text='Sent OK')
         else:
-            SmsLog.objects.create(item=queue_item, text='Error sending: %s' % status)
+            SmsLog.objects.create(item=queue_item, text='Error sending: %s' % resp_text)
+            raise ProviderFailure(resp_text)
