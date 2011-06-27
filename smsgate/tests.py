@@ -259,3 +259,6 @@ class WebSmsGateInterfaceTest(BaseRestTestCase):
     def test_send(self):
         self.assertRaises(ProviderFailure, lambda: self.gi.send(self.qi, **self.overriders))
         self.assertTrue(SmsLog.objects.all().exists())
+
+        l = SmsLog.objects.get()
+        self.assertTrue(l.text.startswith('Error sending'))
