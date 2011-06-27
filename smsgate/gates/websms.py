@@ -45,9 +45,9 @@ class GateInterface(object):
         
         status = resp_cp.get('Common', 'error_num')
         if status == 'OK':
-            SmsLog.objects.create(item=queue_item, text='Sent OK')
+            SmsLog.objects.create(item=queue_item, text=u'Sent OK')
             return True
         else:
             errortext = 'Error sending: %s' % status
-            SmsLog.objects.create(item=queue_item, text=errortext)
+            SmsLog.objects.create(item=queue_item, text=errortext.decode('cp1251'))
             raise ProviderFailure(errortext)

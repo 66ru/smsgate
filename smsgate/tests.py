@@ -246,8 +246,6 @@ class WebSmsGateInterfaceTest(BaseRestTestCase):
         "http_username = user\n" + \
         "http_password = bad_password\n"
 
-        print bad_config
-
         conf_parser = ConfigParser.RawConfigParser()
         conf_parser.readfp(io.BytesIO(bad_config))
 
@@ -256,7 +254,8 @@ class WebSmsGateInterfaceTest(BaseRestTestCase):
         }
 
         self.gi = WebSmsGateInterface(conf_parser)
-
+        SmsLog.objects.all().delete()
 
     def test_send(self):
         self.assertRaises(ProviderFailure, lambda: self.gi.send(self.qi, **self.overriders))
+        self.assertTrue(SmsLog.objects.all().exists())
