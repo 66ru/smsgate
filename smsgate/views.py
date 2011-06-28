@@ -22,7 +22,8 @@ def send(request):
             item = QueueItem(phone_n=phone_n,
                              message=message,
                              comment=comment,
-                             partner=request.user.get_profile())
+                             partner=request.user.get_profile(),
+                             status_message="ADDED TO QUEUE")
             item.save()
 
             SmsLog.objects.create(item=item, text='Added: %s; phone_n: %s; message: %s' %
