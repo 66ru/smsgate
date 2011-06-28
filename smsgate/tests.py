@@ -9,7 +9,7 @@ from django.utils import unittest
 from django.test.client import Client
 from smsgate.auth.backends import PartnerTokenBackend
 from smsgate.gates.exceptions import ProviderFailure
-from smsgate.models import QueueItem, IPRange, SmsLog, GateSettings
+from smsgate.models import QueueItem, IPRange, SmsLog, GateSettings, STATUS_PROVIDER_FAILURE
 from models import User, Partner
 
 from smsgate.gates.websms import GateInterface as WebSmsGateInterface
