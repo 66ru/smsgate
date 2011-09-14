@@ -1,7 +1,8 @@
 #-*- coding: UTF-8 -*-
 from django.core.management.base import BaseCommand
-from smsgate.gates.exceptions import ProviderFailure
-from smsgate.models import QueueItem, GateSettings, Partner, STATUS_IN_PROGRESS, STATUS_OK, STATUS_PROVIDER_FAILURE, STATUS_INNER_FAILURE
+from sms.smsgate.gates.exceptions import ProviderFailure
+from sms.smsgate.models import QueueItem, GateSettings, Partner, STATUS_IN_PROGRESS, STATUS_SENDING, STATUS_OK, STATUS_PROVIDER_FAILURE, STATUS_INNER_FAILURE
+from datetime import datetime
 
 class Command(BaseCommand):
     """
@@ -30,16 +31,19 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-        for qi in QueueItem.objects.filter(status=STATUS_IN_PROGRESS):
+        status_message = str(datetime.now())
+        QueueItem.objects.filter(status=STATUS_IN_PROGRESS).update(status=STATUS_SENDING, status_message=status_message)
+        for qi in QueueItem.objects.filter(status=STATUS_SENDING, status_message=status_message):
             gate = self.partners_gates[qi.partner_id]
             try:
                 gate.send(qi)
                 qi.status = STATUS_OK
+                qi.status_message = ''
             except ProviderFailure as ex:
                 qi.status = STATUS_PROVIDER_FAILURE
-                qi.status_message = str(ex)
+                qi.status_message = str(ex.encode('utf8'))
             except Exception as ex:
                 qi.status = STATUS_INNER_FAILURE
-                qi.status_message = str(ex)
+                qi.status_message = str(ex.encode('utf8'))
             finally:
                 qi.save()

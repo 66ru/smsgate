@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import io
 import string
 import random
@@ -74,6 +75,7 @@ STATUS_IN_PROGRESS = '0'
 STATUS_OK = '1'
 STATUS_INNER_FAILURE = '2'
 STATUS_PROVIDER_FAILURE = '3'
+STATUS_SENDING = '4'
 
 class QueueItem(models.Model):
     phone_n = models.CharField(max_length=15)
@@ -86,6 +88,7 @@ class QueueItem(models.Model):
 
     STATUS_CHOICES = (
             (STATUS_IN_PROGRESS, 'IN PROGRESS'),
+            (STATUS_SENDING, 'SENDING'),
             (STATUS_OK, 'OK'),
             (STATUS_INNER_FAILURE, 'INNER FAILURE'),
             (STATUS_PROVIDER_FAILURE, 'PROVIDER FAILURE'),

@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from smsgate.models import Partner
+from sms.smsgate.models import Partner
 
 class PartnerTokenBackend:
     supports_anonymous_user = False
