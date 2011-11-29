@@ -3,7 +3,7 @@ from django.http import HttpResponse
 
 from models import QueueItem, SmsLog
 from forms import  SendForm
-from sms.smsgate.auth import permission_required_or_403
+from smsgate.auth import permission_required_or_403
 
 def response_json(response_dict):
     return HttpResponse(json.dumps(response_dict), mimetype='application/javascript')

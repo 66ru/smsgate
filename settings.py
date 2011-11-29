@@ -71,7 +71,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware',
-    'sms.smsgate.auth.middlware.PartnerPostTokenMiddleware',
+    'smsgate.auth.middlware.PartnerPostTokenMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -93,7 +93,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     'south',
-    'sms.smsgate',
+    'smsgate',
 )
 
 #
@@ -101,12 +101,12 @@ INSTALLED_APPS = (
 AUTH_PROFILE_MODULE = 'smsgate.Partner'
 
 AUTHENTICATION_BACKENDS = (
-    'sms.smsgate.auth.backends.PartnerTokenBackend',
+    'smsgate.auth.backends.PartnerTokenBackend',
     'django.contrib.auth.backends.ModelBackend',)
 
 SMSGATE_GATES_ENABLED = (
-    'sms.smsgate.gates.websms',
-    'sms.smsgate.gates.test_gate',
+    'smsgate.gates.websms',
+    'smsgate.gates.test_gate',
 )
 
 try:

@@ -4,8 +4,8 @@ from _functools import partial
 import io
 import urllib
 import urllib2
-from sms.smsgate.gates.exceptions import ProviderFailure
-from sms.smsgate.models import SmsLog
+from smsgate.gates.exceptions import ProviderFailure
+from smsgate.models import SmsLog
 
 SEND_ADDR = 'http://websms.ru/http_in5.asp'
 
