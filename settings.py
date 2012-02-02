@@ -71,12 +71,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware',
-    'sms.smsgate.auth.middlware.PartnerPostTokenMiddleware',
+    'smsgate.auth.middlware.PartnerPostTokenMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'sms.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -93,7 +93,9 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     'south',
-    'sms.smsgate',
+    'djkombu',
+    'djcelery',
+    'smsgate',
 )
 
 #
@@ -101,13 +103,27 @@ INSTALLED_APPS = (
 AUTH_PROFILE_MODULE = 'smsgate.Partner'
 
 AUTHENTICATION_BACKENDS = (
-    'sms.smsgate.auth.backends.PartnerTokenBackend',
+    'smsgate.auth.backends.PartnerTokenBackend',
     'django.contrib.auth.backends.ModelBackend',)
 
 SMSGATE_GATES_ENABLED = (
-    'sms.smsgate.gates.websms',
-    'sms.smsgate.gates.test_gate',
+    'smsgate.gates.websms',
+    'smsgate.gates.test_gate',
 )
+
+# Celery config
+import djcelery
+djcelery.setup_loader()
+
+BROKER_URL = 'django://'
+BROKER_BACKEND = 'djkombu.transport.DatabaseTransport'
+BROKER_HOST = 'localhost'
+BROKER_PORT = 5672
+BROKER_USER = 'guest'
+BROKER_PASSWORD = 'guest'
+BROKER_VHOST = '/'
+
+CELERY_IMPORTS = ('smsgate.tasks', )
 
 try:
     from settings_local import *

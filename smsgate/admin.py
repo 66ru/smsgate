@@ -1,4 +1,4 @@
-from sms.smsgate.models import *
+from smsgate.models import *
 from django.contrib import admin
 
 

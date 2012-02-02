@@ -3,7 +3,8 @@ from django.http import HttpResponse
 
 from models import QueueItem, SmsLog
 from forms import  SendForm
-from sms.smsgate.auth import permission_required_or_403
+from smsgate.auth import permission_required_or_403
+from tasks import SendSms
 
 def response_json(response_dict):
     return HttpResponse(json.dumps(response_dict), mimetype='application/javascript')
@@ -25,6 +26,8 @@ def send(request):
                              partner=request.user.get_profile(),
                              status_message="ADDED TO QUEUE")
             item.save()
+            
+            SendSms.delay(item)
 
             SmsLog.objects.create(item=item, text='Added: %s; phone_n: %s; message: %s' %
                                                   (request.user.id, phone_n, message,))
