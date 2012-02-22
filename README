@@ -16,6 +16,13 @@ $ python manage.py syncdb
 $ python manage.py migrate djcelery
 $ python manage.py migrate smsgate
 
+Обязательно поменять в celery путь к проекту(CELERYD_CHDIR) и путь к virtualenv(ENV_PYTHON).
+Настройки(количество процессов, название нод и т.д.) можно поменять/добавить в celery.
+
+# cp celery /etc/default/
+# cp celeryd /etc/init.d/
+# chmod +x /etc/init.d/celeryd
+
 Обязательными являются следующие строки в settings.py:
 
 AUTH_PROFILE_MODULE = 'smsgate.Partner'
@@ -55,9 +62,9 @@ http_password=1
 
 Запуск обработчика очереди sms
 ============
-Изменить в runcelery.sh строки:
-source /path/to/env/bin/activate # На путь к virtualenv проекта
-cd /path/to/app/ # На путь к проекту
-
-Запустить скрипт:
-$ ./runcelery.sh
+Запуск
+# /etc/init.d/celeryd start
+Перезапуск
+# /etc/init.d/celeryd restart
+Остановка
+# /etc/init.d/celeryd stop

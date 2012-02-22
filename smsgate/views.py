@@ -27,10 +27,10 @@ def send(request):
                              status_message="ADDED TO QUEUE")
             item.save()
             
-            SendSms.delay(item)
+            task_id = SendSms.delay(item)
 
-            SmsLog.objects.create(item=item, text='Added: %s; phone_n: %s; message: %s' %
-                                                  (request.user.id, phone_n, message,))
+            SmsLog.objects.create(item=item, text='Added: %s; phone_n: %s; message: %s; task_id: %s' %
+                                                  (request.user.id, phone_n, message, task_id))
 
             return response_json({'status': 0, 'id': item.id})
         else:
