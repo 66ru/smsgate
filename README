@@ -2,6 +2,9 @@
 ==========
 
 Django >= 1.3
+django-celery
+django-kombu
+south
 
 Установка
 =========
@@ -10,6 +13,17 @@ $ git clone git://github.com/mediasite/smsgate.git sms
 
 $ cd sms
 $ python manage.py syncdb
+$ python manage.py migrate djcelery
+$ python manage.py migrate smsgate
+
+Обязательно поменять в celery путь к проекту(CELERYD_CHDIR) и путь к virtualenv(ENV_PYTHON).
+Также поменять CELERYD_USER и CELERYD_GROUP на пользователя и группу, под которыми будет запускаться демон
+(либо создать celery/celery).
+Настройки(количество процессов, название нод и т.д.) можно поменять/добавить в celery.
+
+# cp celery /etc/default/celeryd
+# cp celeryd /etc/init.d/
+# chmod +x /etc/init.d/celeryd
 
 Обязательными являются следующие строки в settings.py:
 
@@ -25,7 +39,7 @@ SMSGATE_GATES_ENABLED = (
 )
 
 
-* а также sms.smsgate в INSTALLED_APPS
+* а также smsgate в INSTALLED_APPS
 
 
 Конфигурация
@@ -47,3 +61,12 @@ http_password=1
 
 * Если есть какие-то особые настройки, рекомендуется их вносить в файл settings_local.py
 (можно создать в корне)
+
+Запуск обработчика очереди sms
+============
+Запуск
+# /etc/init.d/celeryd start
+Перезапуск
+# /etc/init.d/celeryd restart
+Остановка
+# /etc/init.d/celeryd stop

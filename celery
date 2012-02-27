@@ -1,0 +1,20 @@
+CELERYD_NODES="w1"
+
+CELERYD_CHDIR="/opt/Myproject/"
+ENV_PYTHON="$CELERYD_CHDIR/env/bin/python"
+
+CELERYD_MULTI="$ENV_PYTHON $CELERYD_CHDIR/manage.py celeryd_multi"
+
+CELERYCTL="$ENV_PYTHON $CELERYD_CHDIR/manage.py celeryctl"
+
+CELERYD_OPTS="--time-limit=300 --concurrency=8"
+
+CELERY_CONFIG_MODULE="settings"
+
+CELERYD_LOG_FILE="/var/log/celery/%n.log"
+CELERYD_PID_FILE="/var/run/celery/%n.pid"
+
+CELERYD_USER="celery"
+CELERYD_GROUP="celery"
+
+export DJANGO_SETTINGS_MODULE="settings"

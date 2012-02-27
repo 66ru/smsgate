@@ -1,7 +1,7 @@
 #-*- coding: UTF-8 -*-
 from django.core.management.base import BaseCommand
-from sms.smsgate.gates.exceptions import ProviderFailure
-from sms.smsgate.models import QueueItem, GateSettings, Partner, STATUS_IN_PROGRESS, STATUS_SENDING, STATUS_OK, STATUS_PROVIDER_FAILURE, STATUS_INNER_FAILURE
+from smsgate.gates.exceptions import ProviderFailure
+from smsgate.models import QueueItem, GateSettings, Partner, STATUS_IN_PROGRESS, STATUS_SENDING, STATUS_OK, STATUS_PROVIDER_FAILURE, STATUS_INNER_FAILURE
 from datetime import datetime
 
 class Command(BaseCommand):
