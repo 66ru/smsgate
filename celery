@@ -5,7 +5,7 @@ ENV_PYTHON="$CELERYD_CHDIR/env/bin/python"
 
 CELERYD_MULTI="$ENV_PYTHON $CELERYD_CHDIR/manage.py celeryd_multi"
 
-CELERYCTL=$ENV_PYTHON $CELERYD_CHDIR/manage.py celeryctl"
+CELERYCTL="$ENV_PYTHON $CELERYD_CHDIR/manage.py celeryctl"
 
 CELERYD_OPTS="--time-limit=300 --concurrency=8"
 

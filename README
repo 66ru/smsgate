@@ -17,9 +17,11 @@ $ python manage.py migrate djcelery
 $ python manage.py migrate smsgate
 
 Обязательно поменять в celery путь к проекту(CELERYD_CHDIR) и путь к virtualenv(ENV_PYTHON).
+Также поменять CELERYD_USER и CELERYD_GROUP на пользователя и группу, под которыми будет запускаться демон
+(либо создать celery/celery).
 Настройки(количество процессов, название нод и т.д.) можно поменять/добавить в celery.
 
-# cp celery /etc/default/
+# cp celery /etc/default/celeryd
 # cp celeryd /etc/init.d/
 # chmod +x /etc/init.d/celeryd
 
