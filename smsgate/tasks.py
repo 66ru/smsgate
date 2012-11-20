@@ -41,10 +41,10 @@ class SendSms(Task):
             queue_item.status_message = ''
         except ProviderFailure as ex:
             queue_item.status = STATUS_PROVIDER_FAILURE
-            queue_item.status_message = str(ex).decode('cp1251', errors='ignore')
+            queue_item.status_message = str(ex).decode('cp1251', 'ignore')
         except Exception as ex:
             queue_item.status = STATUS_INNER_FAILURE
-            queue_item.status_message = str(ex).decode('cp1251', errors='ignore')
+            queue_item.status_message = str(ex).decode('cp1251', 'ignore')
         finally:
             queue_item.save()
 
