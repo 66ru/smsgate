@@ -55,7 +55,7 @@ MEDIA_URL = ''
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+# ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '9xvlcn2^o+2v@r3n8gr+8z&_dt^+wkb2evg0g(%&r+#6qqaxq2'
@@ -71,9 +71,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware',
-    'smsgate.auth.middlware.PartnerPostTokenMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'smsgate.auth.middlware.PartnerPostTokenMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -103,8 +103,9 @@ INSTALLED_APPS = (
 AUTH_PROFILE_MODULE = 'smsgate.Partner'
 
 AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
     'smsgate.auth.backends.PartnerTokenBackend',
-    'django.contrib.auth.backends.ModelBackend',)
+)
 
 SMSGATE_GATES_ENABLED = (
     'smsgate.gates.websms',

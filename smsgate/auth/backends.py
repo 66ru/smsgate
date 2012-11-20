@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from smsgate.models import Partner
 
 class PartnerTokenBackend:
+    supports_inactive_user = False
     supports_anonymous_user = False
     supports_object_permissions = False
     def authenticate(self, id=None, token=None):
