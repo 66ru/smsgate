@@ -17,6 +17,11 @@ class QueueItemAdmin(admin.ModelAdmin):
     list_filter = ('created', 'changed', 'status')
 
 
+class SmsLogAdmin(admin.ModelAdmin):
+    list_display = ('item', 'time', 'text')
+
+
 admin.site.register(QueueItem, QueueItemAdmin)
+admin.site.register(SmsLog, SmsLogAdmin)
 admin.site.register(Partner, PartnerAdmin)
 admin.site.register(GateSettings)
