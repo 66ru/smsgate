@@ -33,7 +33,7 @@ class SendSms(Task):
         queue_item.status_message = status_message
         queue_item.save()
 
-        gate = self.partners_gates[queue_item.partner_id]
+        gate = self.partners_gates[queue_item.partner.id]
 
         try:
             gate.send(queue_item)
