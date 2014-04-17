@@ -65,8 +65,8 @@ http_password=1
 Запуск обработчика очереди sms
 ============
 Запуск
-# /etc/init.d/celeryd start
+$ supervisord -c ~/sms/supervisord.conf
 Перезапуск
-# /etc/init.d/celeryd restart
+$ supervisorctl -c ~/sms/supervisord.conf restart celery
 Остановка
-# /etc/init.d/celeryd stop
+$ supervisorctl -c ~/sms/supervisord.conf stop celery
