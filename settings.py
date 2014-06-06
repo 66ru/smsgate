@@ -97,6 +97,7 @@ INSTALLED_APPS = (
     'kombu.transport.django',
     'djcelery',
     'smsgate',
+    'raven.contrib.django.raven_compat',
 )
 
 #
@@ -120,6 +121,10 @@ djcelery.setup_loader()
 BROKER_URL = 'django://'
 
 CELERY_IMPORTS = ('smsgate.tasks', )
+
+RAVEN_CONFIG = {
+    'dsn': 'http://d7c56849d81f4c93b35539915317c498:786351dd17bd4375938d957f17981589@sentry.gpor.ru/6',
+}
 
 try:
     from settings_local import *
